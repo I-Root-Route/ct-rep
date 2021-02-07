@@ -1,14 +1,12 @@
 import logging
 import json
-from typing import List
 
 import azure.functions as func
 
 from settings import settings
 
 
-def split_to_chunks(number: int) -> List[str]:
-    # 上から4つづつの塊に分ける
+def split_to_chunks(number):
     chunks = []
     for i in range(0, len(str(number)), 4):
         temp = str(number)[::-1][i:i + 4]
@@ -17,7 +15,7 @@ def split_to_chunks(number: int) -> List[str]:
     return chunks[::-1]
 
 
-def num_to_kanji_helper(chunk: List[str]) -> str:
+def num_to_kanji_helper(chunk):
     kanji_chunk = ''
     for i, num in enumerate(chunk):
         if int(num) == 0:
@@ -28,7 +26,7 @@ def num_to_kanji_helper(chunk: List[str]) -> str:
     return kanji_chunk
 
 
-def num_to_kanji(num: int) -> str:
+def num_to_kanji(num):
     assert 0 <= num <= 9999999999999999
     if 0 <= num <= 10:
         return settings.kanjitable[num]
@@ -36,7 +34,7 @@ def num_to_kanji(num: int) -> str:
     chunks = split_to_chunks(num)
     for i, chunk in enumerate(chunks):
         kanji_chunk = num_to_kanji_helper(chunk)
-        out += kanji_chunk + settings.split_base[len(chunks) - i - 1] if kanji_chunk else ''
+        out += kanji_chunk + settings.split_base[len(chunks) - i - 1]
 
     return out
 

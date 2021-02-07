@@ -1,20 +1,14 @@
 import logging
 import json
-from typing import List, Tuple
 
 import azure.functions as func
 
 from settings import settings
 
 
-def check_kanji(kanji_num: str) -> bool:
-    # 大字表記のはじめは必ずsettings.baseにあるべき。
-    # 例) 拾は認めず、壱拾は認める
-    if kanji_num[0] not in settings.base:
-        return False
-
+def check_kanji(kanji_num):
     temp = None
-    for i, kanji in enumerate(kanji_num):
+    for kanji in kanji_num:
         if temp is None:
             temp = kanji
             continue
@@ -26,14 +20,9 @@ def check_kanji(kanji_num: str) -> bool:
     return True
 
 
-def split_to_chunks(kanji_num: str, temp='', overall=None, max_exp=None) -> List[Tuple[str]]:
-    # [("四百参拾弐", "兆"), ("四千参百弐拾七", "億").....]
-    # のような四つ区切りで出てくる位(万、億、兆)とそれ以外で分ける。
+def split_to_chunks(kanji_num: str, temp='', overall=None):
     if overall is None:
         overall = []
-
-    if max_exp is None:
-        max_exp = float('inf')
 
     if not kanji_num:
         return overall
@@ -45,16 +34,13 @@ def split_to_chunks(kanji_num: str, temp='', overall=None, max_exp=None) -> List
                 overall.append((temp if temp else None, None))
                 return overall
         else:
-            assert max_exp > settings.num_table[kanji]  # 壱兆参千「万」七「兆」のような形を受け付けない
             overall.append((temp if temp else None, kanji))
-            return split_to_chunks(kanji_num[i + 1:], temp='', overall=overall, max_exp=settings.num_table[kanji])
+            return split_to_chunks(kanji_num[i + 1:], temp='', overall=overall)
 
 
-def kanji_to_num_helper(base: str) -> int:
-    # チャンクごとに漢数字をアラビア数字に変換する
+def kanji_to_num_helper(base):
     base_num = 0
     temp = 0
-    max_chunk_base = 0
     for i, kanji in enumerate(base):
         if kanji not in settings.exp:
             temp += settings.num_table[kanji]
@@ -62,18 +48,14 @@ def kanji_to_num_helper(base: str) -> int:
                 base_num += temp
                 return base_num
         else:
-            char_num = settings.num_table[kanji]
-            if char_num in settings.chunk_base:
-                temp_max = max_chunk_base
-                max_chunk_base = max(max_chunk_base, char_num)
-            temp *= char_num
+            temp *= settings.num_table[kanji]
             base_num += temp
             temp = 0
 
     return base_num
 
 
-def kanji_to_num(kanji_num: str) -> int:
+def kanji_to_num(kanji_num):
     if not check_kanji(kanji_num):
         raise ValueError
 
@@ -90,19 +72,19 @@ def kanji_to_num(kanji_num: str) -> int:
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
+    kanji = req.route_params.get('kanji')
     code = 200
     message = None
 
     try:
-        kanji = req.route_params.get('kanji')
         num = kanji_to_num(kanji)
-        message = str(num)
-    except ValueError:
+        message = num
+    except ValueError as e:
         code = 204
-    except Exception:
+    except Exception as e:
         code = 204
     finally:
         if message:
-            return func.HttpResponse(json.dumps(int(message)), status_code=code)
+            return func.HttpResponse(json.dumps(message), status_code=code)
         else:
             return func.HttpResponse(status_code=code)
