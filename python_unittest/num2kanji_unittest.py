@@ -36,6 +36,21 @@ class N2KNormalTest(unittest.TestCase):
     def test8(self):
         self.assertEqual(n2k(9999999999999999), "九千九百九拾九兆九千九百九拾九億九千九百九拾九万九千九百九拾九")
 
+    def test9(self):
+        self.assertEqual(n2k(1), "壱")
+
+    def test10(self):
+        self.assertEqual(n2k(10), "壱拾")
+
+    def test11(self):
+        self.assertEqual(n2k(101), "壱百壱")
+
+    def test12(self):
+        self.assertEqual(n2k(1010), "壱千壱拾")
+
+    def test13(self):
+        self.assertEqual(n2k(10947), "壱万九百四拾七")
+
 
 class N2KErrorTest(unittest.TestCase):
     def test1(self):

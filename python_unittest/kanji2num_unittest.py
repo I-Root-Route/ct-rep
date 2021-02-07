@@ -35,6 +35,21 @@ class K2NNormalTest(unittest.TestCase):
 
     def test8(self):
         self.assertEqual(k2n("四兆壱拾万参"), 4000000100003)
+        
+    def test9(self):
+        self.assertEqual(k2n("壱"), 1)
+
+    def test10(self):
+        self.assertEqual(k2n("壱拾"), 10)
+
+    def test11(self):
+        self.assertEqual(k2n("壱百壱"), 101)
+
+    def test12(self):
+        self.assertEqual(k2n("壱千壱拾"), 1010)
+
+    def test13(self):
+        self.assertEqual(k2n("壱万九百四拾七"), 10947)
 
 
 class K2NErrorTest(unittest.TestCase):

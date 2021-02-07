@@ -31,7 +31,7 @@ class N2K(object):
 
     def num_to_kanji(self, num: int) -> str:
         assert 0 <= num <= 9999999999999999
-        if 0 <= num <= 10:
+        if 0 <= num <= 9:
             return settings.kanjitable[num]
         out = ""
         chunks = self.split_to_chunks(num)
