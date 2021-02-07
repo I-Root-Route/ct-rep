@@ -10,7 +10,7 @@
         "get",
         "post"
       ],
-      "route": "v1/kanji2num/{kanji}"
+      "route": "v1/kanji2number/{kanji}"
     },
     {
       "type": "http",

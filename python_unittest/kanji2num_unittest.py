@@ -1,7 +1,7 @@
 import unittest
 import requests
 
-url = "https://kanjinumbers.azurewebsites.net/api/v1/kanji2num/"
+url = "https://kanjinumbers.azurewebsites.net/api/v1/kanji2number/"
 # url = "http://localhost:7071/api/v1/kanji2num/"
 
 
